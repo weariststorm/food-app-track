@@ -1,56 +1,50 @@
-// src/components/EditItemModal.tsx
-import React, { FC, useState, useEffect, useMemo } from 'react';
-import { Item, Category, presetImages, getImagePath } from '../App';
-import { useAuth } from '../contexts/AuthContext';
+import React, { FC, useState, useEffect, useMemo } from 'react'
+import { Item, Category, presetImages, getImagePath } from '../App'
+import { useAuth } from '../contexts/AuthContext'
 
 interface Props {
-  item: Item;
-  categories: Category[];
-  onCancel(): void;
-  onSave(updated: Item): void;
+  item: Item
+  categories: Category[]
+  onCancel(): void
+  onSave(updated: Item): void
 }
 
 const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
-  const { user } = useAuth();
-  const isOwner = user?.role === 'owner';
-  const isGuest = user?.role === 'guest';
+  const { user } = useAuth()
+  const isOwner = user?.role === 'owner'
 
-  // shared state
-  const [quantity, setQuantity] = useState(item.quantity);
-  const [expiry, setExpiry] = useState(item.expiry);
-
-  // owner‐only state
-  const [name, setName] = useState(item.name);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [quantity, setQuantity] = useState(item.quantity)
+  const [expiry, setExpiry] = useState(item.expiry)
+  const [name, setName] = useState(item.name)
+  const [searchTerm, setSearchTerm] = useState('')
   const [selectedImage, setSelectedImage] = useState(
     presetImages.find(fn => getImagePath(fn) === item.image) || ''
-  );
-  const [threshold, setThreshold] = useState(item.threshold);
-  const [caseCost, setCaseCost] = useState(item.caseCost);
-  const [caseSize, setCaseSize] = useState(item.caseSize);
-  const [category, setCategory] = useState(item.category);
+  )
+  const [threshold, setThreshold] = useState(item.threshold)
+  const [caseCost, setCaseCost] = useState(item.caseCost)
+  const [caseSize, setCaseSize] = useState(item.caseSize)
+  const [category, setCategory] = useState(item.category)
 
-  // reset on item change
   useEffect(() => {
-    setQuantity(item.quantity);
-    setExpiry(item.expiry);
-    setName(item.name);
-    setSearchTerm('');
+    setQuantity(item.quantity)
+    setExpiry(item.expiry)
+    setName(item.name)
+    setSearchTerm('')
     setSelectedImage(
       presetImages.find(fn => getImagePath(fn) === item.image) || ''
-    );
-    setThreshold(item.threshold);
-    setCaseCost(item.caseCost);
-    setCaseSize(item.caseSize);
-    setCategory(item.category);
-  }, [item]);
+    )
+    setThreshold(item.threshold)
+    setCaseCost(item.caseCost)
+    setCaseSize(item.caseSize)
+    setCategory(item.category)
+  }, [item])
 
   const filteredImages = useMemo(
     () => presetImages.filter(fn =>
       fn.toLowerCase().includes(searchTerm.toLowerCase())
     ),
     [searchTerm]
-  );
+  )
 
   const handleSave = () => {
     if (isOwner) {
@@ -63,27 +57,22 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
         threshold,
         caseCost,
         caseSize,
-        category,
-      });
+        category
+      })
     } else {
-      // guest can only update quantity & expiry
-      onSave({
-        ...item,
-        quantity,
-        expiry,
-      });
+      onSave({ ...item, quantity, expiry })
     }
-  };
+  }
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 z-50"
       role="dialog"
       aria-modal="true"
       aria-labelledby="edit-item-title"
     >
-      <div className="bg-slate-900 text-white rounded-lg p-4 w-full max-w-lg max-h-[90vh] overflow-auto text-sm">
-        <h3 id="edit-item-title" className="text-xl font-semibold mb-4">
+      <div className="bg-slate-900 text-white rounded-md shadow-lg p-4 w-full max-w-md max-h-[90vh] overflow-y-auto text-sm">
+        <h3 id="edit-item-title" className="text-xl font-semibold mb-4 text-emerald-400">
           ✏️ Edit Item
         </h3>
 
@@ -138,9 +127,7 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
               >
                 <option value="">— select —</option>
                 {filteredImages.map(fn => (
-                  <option key={fn} value={fn}>
-                    {fn}
-                  </option>
+                  <option key={fn} value={fn}>{fn}</option>
                 ))}
               </select>
             </label>
@@ -202,6 +189,7 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
                 className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
+
             <label className="block">
               Expiry
               <input
@@ -214,23 +202,23 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
           </div>
         )}
 
-        <div className="mt-6 flex justify-end space-x-3">
+        <div className="mt-6 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-600 rounded"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-emerald-600 rounded"
+            className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded"
           >
             Save
           </button>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default EditItemModal;
+export default EditItemModal

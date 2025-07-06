@@ -1,4 +1,4 @@
-// src/App.tsx (Part 1 of 2)
+// src/App.tsx
 import React, { useState, useEffect } from 'react'
 import {
   Routes,
@@ -115,6 +115,7 @@ function InnerApp(): JSX.Element {
   useEffect(() => {
     localStorage.setItem('stockItems', JSON.stringify(items))
   }, [items])
+
   useEffect(() => {
     localStorage.setItem('stockCategories', JSON.stringify(categories))
   }, [categories])
@@ -205,8 +206,7 @@ function InnerApp(): JSX.Element {
     )
     notify('success', 'Category deleted')
   }
-  // src/App.tsx (Part 2 of 2)
-  if (!user) {
+    if (!user) {
     return (
       <Routes>
         <Route path="/login" element={<LoginPage />} />
@@ -216,14 +216,14 @@ function InnerApp(): JSX.Element {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-900 text-white">
+    <div className="flex flex-col min-h-screen bg-slate-900 text-white overflow-x-hidden">
       {/* header */}
-      <header className="flex items-center justify-between p-4 border-b border-slate-700">
+      <header className="flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between p-4 border-b border-slate-700 gap-y-3">
         <h1 className="text-2xl font-bold text-emerald-400">📦 Food Stock Take</h1>
 
         {/* mobile toggle */}
         <button
-          className="sm:hidden text-gray-300 focus:outline-none"
+          className="sm:hidden text-gray-300 ml-auto"
           onClick={() => setMobileOpen(o => !o)}
         >
           {mobileOpen ? '✖️' : '☰'}
@@ -231,9 +231,9 @@ function InnerApp(): JSX.Element {
 
         {/* navigation */}
         <nav
-          className={`${
+          className={`w-full sm:w-auto ${
             mobileOpen ? 'block' : 'hidden'
-          } sm:flex space-x-4 text-sm`}
+          } sm:flex flex-wrap gap-4 text-sm mt-2 sm:mt-0`}
         >
           <Link to="/">Dashboard</Link>
           <Link to="/stock">Stock</Link>
@@ -245,18 +245,18 @@ function InnerApp(): JSX.Element {
         </nav>
 
         {/* action buttons */}
-        <div className="hidden sm:flex items-center space-x-3">
+        <div className="w-full sm:w-auto flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
           {isOwner && (
             <button
               onClick={() => setShowAddItem(true)}
-              className="bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-sm"
+              className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-sm"
             >
               ➕ Add Item
             </button>
           )}
           <button
             onClick={logout}
-            className="text-red-400 hover:text-red-600 text-sm"
+            className="w-full sm:w-auto text-red-400 hover:text-red-600 text-sm"
           >
             Logout
           </button>

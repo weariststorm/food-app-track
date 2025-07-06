@@ -1,30 +1,29 @@
-// src/components/AddItemModal.tsx
-import React, { FC } from 'react';
-import { Category } from '../App';
+import React, { FC } from 'react'
+import { Category } from '../App'
 
 interface Props {
-  name: string;
-  setName(val: string): void;
-  quantity: number;
-  setQuantity(val: number): void;
-  expiry: string;
-  setExpiry(val: string): void;
-  imageSearchTerm: string;
-  setImageSearchTerm(val: string): void;
-  filteredImages: string[];
-  selectedImage: string;
-  setSelectedImage(val: string): void;
-  threshold: number;
-  setThreshold(val: number): void;
-  caseCost: number;
-  setCaseCost(val: number): void;
-  caseSize: number;
-  setCaseSize(val: number): void;
-  category: string;
-  setCategory(val: string): void;
-  categories: Category[];
-  onCancel(): void;
-  onAdd(): void;
+  name: string
+  setName(val: string): void
+  quantity: number
+  setQuantity(val: number): void
+  expiry: string
+  setExpiry(val: string): void
+  imageSearchTerm: string
+  setImageSearchTerm(val: string): void
+  filteredImages: string[]
+  selectedImage: string
+  setSelectedImage(val: string): void
+  threshold: number
+  setThreshold(val: number): void
+  caseCost: number
+  setCaseCost(val: number): void
+  caseSize: number
+  setCaseSize(val: number): void
+  category: string
+  setCategory(val: string): void
+  categories: Category[]
+  onCancel(): void
+  onAdd(): void
 }
 
 const AddItemModal: FC<Props> = ({
@@ -40,15 +39,16 @@ const AddItemModal: FC<Props> = ({
   categories, onCancel, onAdd
 }) => (
   <div
-    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2"
+    className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-3 z-50"
     role="dialog"
     aria-modal="true"
     aria-labelledby="add-item-title"
   >
-    <div className="bg-slate-900 text-white rounded-lg p-4 w-full max-w-lg max-h-[90vh] overflow-auto">
-      <h3 id="add-item-title" className="text-xl font-semibold mb-4">
+    <div className="bg-slate-900 text-white rounded-md shadow-lg p-4 w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <h3 id="add-item-title" className="text-xl font-semibold mb-4 text-emerald-400">
         ➕ Add Item
       </h3>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
         <label className="block">
           Name
@@ -59,6 +59,7 @@ const AddItemModal: FC<Props> = ({
             className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
           />
         </label>
+
         <label className="block">
           Quantity
           <input
@@ -68,6 +69,7 @@ const AddItemModal: FC<Props> = ({
             className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
           />
         </label>
+
         <label className="block">
           Expiry
           <input
@@ -77,6 +79,7 @@ const AddItemModal: FC<Props> = ({
             className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
           />
         </label>
+
         <label className="block">
           Filter Images
           <input
@@ -86,6 +89,7 @@ const AddItemModal: FC<Props> = ({
             className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
           />
         </label>
+
         <label className="block">
           Choose Image
           <select
@@ -99,6 +103,7 @@ const AddItemModal: FC<Props> = ({
             ))}
           </select>
         </label>
+
         <label className="block">
           Threshold
           <input
@@ -108,6 +113,7 @@ const AddItemModal: FC<Props> = ({
             className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
           />
         </label>
+
         <label className="block">
           Case Cost
           <input
@@ -117,6 +123,7 @@ const AddItemModal: FC<Props> = ({
             className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
           />
         </label>
+
         <label className="block">
           Case Size
           <input
@@ -126,6 +133,7 @@ const AddItemModal: FC<Props> = ({
             className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
           />
         </label>
+
         <label className="block sm:col-span-2">
           Category
           <select
@@ -142,22 +150,23 @@ const AddItemModal: FC<Props> = ({
           </select>
         </label>
       </div>
-      <div className="mt-4 flex justify-end space-x-2">
+
+      <div className="mt-5 flex flex-col sm:flex-row justify-end gap-2">
         <button
           onClick={onCancel}
-          className="px-3 py-1 bg-gray-600 rounded focus:ring-2 focus:ring-red-400"
+          className="w-full sm:w-auto px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded focus:ring-2 focus:ring-red-400"
         >
           Cancel
         </button>
         <button
           onClick={onAdd}
-          className="px-3 py-1 bg-emerald-600 rounded focus:ring-2 focus:ring-emerald-400"
+          className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded focus:ring-2 focus:ring-emerald-400"
         >
           Add
         </button>
       </div>
     </div>
   </div>
-);
+)
 
-export default AddItemModal;
+export default AddItemModal

@@ -1,28 +1,30 @@
-/* src/index.css */
-
 /* 1. Tailwind base layers */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 2. Your global/reset styles */
-/* (Re-add any custom rules you had here, e.g. body background, font, etc.) */
+/* 2. Global reset and layout protection */
 html,
-body {
+body,
+#root {
   height: 100%;
+  width: 100%;
+  max-width: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
-/* Example global styles—customize as needed */
+/* Global styling */
 body {
   @apply bg-slate-900 text-white font-sans;
 }
+
 a {
   @apply text-emerald-400 hover:underline;
 }
 
-/* 3. Fade transition classes */
+/* 3. Fade transition classes (for page transitions) */
 .fade-enter {
   opacity: 0;
 }
@@ -38,5 +40,11 @@ a {
   transition: opacity 200ms ease-out;
 }
 
-/* 4. Any other custom utilities or overrides */
-/* e.g. scroll-bar hiding, print styles, etc. */
+/* 4. Optional: Hide scrollbars on scrollable areas */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* WebKit */
+}

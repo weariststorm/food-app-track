@@ -1,5 +1,3 @@
-// src/components/HistoryPage.tsx
-
 import React, { FC, useState, useEffect } from 'react'
 import { getHistory, LogEntry } from '../utils/history'
 
@@ -28,38 +26,38 @@ const HistoryPage: FC = () => {
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-3xl font-bold text-emerald-400 mb-4">
+    <div className="p-4 max-w-screen overflow-x-hidden">
+      <h2 className="text-3xl font-bold text-emerald-400 mb-6 text-center sm:text-left">
         📜 History
       </h2>
 
       <button
         onClick={handleExportCsv}
-        className="mb-4 bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded text-sm"
+        className="mb-6 bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded text-sm block mx-auto sm:mx-0"
       >
         📥 Export CSV
       </button>
 
       {logs.length === 0 ? (
-        <p className="text-gray-400">No history recorded.</p>
+        <p className="text-gray-400 text-center">No history recorded.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto rounded border border-slate-700">
+          <table className="w-full text-left text-sm min-w-[320px] border-collapse">
             <thead>
-              <tr className="border-b border-gray-600">
-                <th className="py-2">Time</th>
-                <th className="py-2">Item</th>
-                <th className="py-2">Action</th>
+              <tr className="border-b border-slate-600 bg-slate-800">
+                <th className="py-2 px-3">Time</th>
+                <th className="py-2 px-3">Item</th>
+                <th className="py-2 px-3">Action</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log, idx) => (
-                <tr key={idx} className="border-b border-gray-700">
-                  <td className="py-2 text-xs">
+                <tr key={idx} className="border-b border-slate-700">
+                  <td className="py-2 px-3 text-xs text-gray-300">
                     {new Date(log.time).toLocaleString()}
                   </td>
-                  <td className="py-2">{log.name}</td>
-                  <td className="py-2 capitalize">{log.action}</td>
+                  <td className="py-2 px-3">{log.name}</td>
+                  <td className="py-2 px-3 capitalize">{log.action}</td>
                 </tr>
               ))}
             </tbody>
