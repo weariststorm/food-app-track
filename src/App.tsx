@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useState, useEffect } from 'react'
 import {
   Routes,
@@ -28,6 +27,8 @@ import { logItem } from './utils/history'
 
 // dynamic image imports
 export const imageModules = import.meta.glob('./assets/images/*.{png,jpg,jpeg}')
+Object.values(imageModules).forEach(loader => loader())
+
 export const presetImages = Object.keys(imageModules).map(path =>
   path.replace('./assets/images/', '')
 )
@@ -217,11 +218,11 @@ function InnerApp(): JSX.Element {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-900 text-white overflow-x-hidden">
-      {/* header */}
+      {/* Header */}
       <header className="flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between p-4 border-b border-slate-700 gap-y-3">
         <h1 className="text-2xl font-bold text-emerald-400">📦 Food Stock Take</h1>
 
-        {/* mobile toggle */}
+        {/* Mobile toggle */}
         <button
           className="sm:hidden text-gray-300 ml-auto"
           onClick={() => setMobileOpen(o => !o)}
@@ -229,11 +230,11 @@ function InnerApp(): JSX.Element {
           {mobileOpen ? '✖️' : '☰'}
         </button>
 
-        {/* navigation */}
+        {/* Navigation */}
         <nav
           className={`w-full sm:w-auto ${
-            mobileOpen ? 'block' : 'hidden'
-          } sm:flex flex-wrap gap-4 text-sm mt-2 sm:mt-0`}
+            mobileOpen ? 'flex' : 'hidden'
+          } flex-col sm:flex sm:flex-wrap gap-4 text-sm mt-2 sm:mt-0 space-y-2 sm:space-y-0`}
         >
           <Link to="/">Dashboard</Link>
           <Link to="/stock">Stock</Link>
@@ -244,7 +245,7 @@ function InnerApp(): JSX.Element {
           <Link to="/history">History</Link>
         </nav>
 
-        {/* action buttons */}
+        {/* Action buttons */}
         <div className="w-full sm:w-auto flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
           {isOwner && (
             <button
@@ -263,7 +264,7 @@ function InnerApp(): JSX.Element {
         </div>
       </header>
 
-      {/* page transitions */}
+      {/* Pages */}
       <div className="relative flex-grow overflow-hidden">
         <TransitionGroup component={null}>
           <CSSTransition key={location.pathname} classNames="fade" timeout={200}>
@@ -345,7 +346,7 @@ function InnerApp(): JSX.Element {
         </TransitionGroup>
       </div>
 
-      {/* modals */}
+      {/* Modals */}
       {showAddItem && isOwner && (
         <AddItemModal
           name={name}
@@ -374,6 +375,7 @@ function InnerApp(): JSX.Element {
           onAdd={handleAddItem}
         />
       )}
+
       {editingItem && (
         <EditItemModal
           item={editingItem}
@@ -382,12 +384,14 @@ function InnerApp(): JSX.Element {
           onSave={handleSaveEditItem}
         />
       )}
+
       {showAddCat && (
         <AddCategoryModal
           onCancel={() => setShowAddCat(false)}
           onAdd={handleAddCategory}
         />
       )}
+
       {editingCat && (
         <EditCategoryModal
           category={editingCat}
