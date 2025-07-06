@@ -230,19 +230,37 @@ function InnerApp(): JSX.Element {
           {mobileOpen ? '✖️' : '☰'}
         </button>
 
-        {/* Navigation */}
-        <nav
-          className={`w-full sm:w-auto ${
-            mobileOpen ? 'flex' : 'hidden'
-          } flex-col sm:flex sm:flex-wrap gap-4 text-sm mt-2 sm:mt-0 space-y-2 sm:space-y-0`}
-        >
-          <Link to="/">Dashboard</Link>
-          <Link to="/stock">Stock</Link>
-          <Link to="/expiry">Expiry</Link>
-          {isOwner && <Link to="/shopping">Shopping</Link>}
-          {isOwner && <Link to="/pinned">Pinned</Link>}
-          {isOwner && <Link to="/categories">Categories</Link>}
-          <Link to="/history">History</Link>
+        {/* Navigation as scrollable tab-style links */}
+        <nav className="w-full overflow-x-auto mt-2 sm:mt-0">
+          <div className="flex gap-2 sm:gap-4 whitespace-nowrap">
+            <Link to="/" className="bg-slate-800 hover:bg-emerald-600 px-4 py-2 rounded-full text-sm transition">
+              Dashboard
+            </Link>
+            <Link to="/stock" className="bg-slate-800 hover:bg-emerald-600 px-4 py-2 rounded-full text-sm transition">
+              Stock
+            </Link>
+            <Link to="/expiry" className="bg-slate-800 hover:bg-emerald-600 px-4 py-2 rounded-full text-sm transition">
+              Expiry
+            </Link>
+            {isOwner && (
+              <Link to="/shopping" className="bg-slate-800 hover:bg-emerald-600 px-4 py-2 rounded-full text-sm transition">
+                Shopping
+              </Link>
+            )}
+            {isOwner && (
+              <Link to="/pinned" className="bg-slate-800 hover:bg-emerald-600 px-4 py-2 rounded-full text-sm transition">
+                Pinned
+              </Link>
+            )}
+            {isOwner && (
+              <Link to="/categories" className="bg-slate-800 hover:bg-emerald-600 px-4 py-2 rounded-full text-sm transition">
+                Categories
+              </Link>
+            )}
+            <Link to="/history" className="bg-slate-800 hover:bg-emerald-600 px-4 py-2 rounded-full text-sm transition">
+              History
+            </Link>
+          </div>
         </nav>
 
         {/* Action buttons */}
@@ -270,74 +288,56 @@ function InnerApp(): JSX.Element {
           <CSSTransition key={location.pathname} classNames="fade" timeout={200}>
             <div className="absolute inset-0 p-4 overflow-auto">
               <Routes location={location}>
-                <Route
-                  path="/"
-                  element={
-                    <DashboardPage
-                      items={items}
-                      categories={categories}
-                      onDelete={handleDeleteItem}
-                      onEdit={setEditingItem}
-                      onTogglePin={handleTogglePin}
-                    />
-                  }
-                />
-                <Route
-                  path="/stock"
-                  element={
-                    <StockPage
-                      items={items}
-                      categories={categories}
-                      onDelete={handleDeleteItem}
-                      onEdit={setEditingItem}
-                      onTogglePin={handleTogglePin}
-                      onImport={handleImportItems}
-                    />
-                  }
-                />
-                <Route
-                  path="/expiry"
-                  element={
-                    <ExpiryPage
-                      items={items}
-                      onDelete={handleDeleteItem}
-                      onEdit={setEditingItem}
-                      onTogglePin={handleTogglePin}
-                    />
-                  }
-                />
-                <Route
-                  path="/shopping"
-                  element={
-                    <ShoppingList
-                      items={items}
-                      onEdit={setEditingItem}
-                      onTogglePin={handleTogglePin}
-                    />
-                  }
-                />
-                <Route
-                  path="/pinned"
-                  element={
-                    <PinnedPage
-                      items={items}
-                      onDelete={handleDeleteItem}
-                      onEdit={setEditingItem}
-                      onTogglePin={handleTogglePin}
-                    />
-                  }
-                />
-                <Route
-                  path="/categories"
-                  element={
-                    <CategoryManagement
-                      categories={categories}
-                      onAdd={() => setShowAddCat(true)}
-                      onEdit={setEditingCat}
-                      onDelete={handleDeleteCategory}
-                    />
-                  }
-                />
+                <Route path="/" element={
+                  <DashboardPage
+                    items={items}
+                    categories={categories}
+                    onDelete={handleDeleteItem}
+                    onEdit={setEditingItem}
+                    onTogglePin={handleTogglePin}
+                  />
+                }/>
+                <Route path="/stock" element={
+                  <StockPage
+                    items={items}
+                    categories={categories}
+                    onDelete={handleDeleteItem}
+                    onEdit={setEditingItem}
+                    onTogglePin={handleTogglePin}
+                    onImport={handleImportItems}
+                  />
+                }/>
+                <Route path="/expiry" element={
+                  <ExpiryPage
+                    items={items}
+                    onDelete={handleDeleteItem}
+                    onEdit={setEditingItem}
+                    onTogglePin={handleTogglePin}
+                  />
+                }/>
+                <Route path="/shopping" element={
+                  <ShoppingList
+                    items={items}
+                    onEdit={setEditingItem}
+                    onTogglePin={handleTogglePin}
+                  />
+                }/>
+                <Route path="/pinned" element={
+                  <PinnedPage
+                    items={items}
+                    onDelete={handleDeleteItem}
+                    onEdit={setEditingItem}
+                    onTogglePin={handleTogglePin}
+                  />
+                }/>
+                <Route path="/categories" element={
+                  <CategoryManagement
+                    categories={categories}
+                    onAdd={() => setShowAddCat(true)}
+                    onEdit={setEditingCat}
+                    onDelete={handleDeleteCategory}
+                  />
+                }/>
                 <Route path="/history" element={<HistoryPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
@@ -358,7 +358,7 @@ function InnerApp(): JSX.Element {
           imageSearchTerm={imageSearchTerm}
           setImageSearchTerm={setImageSearchTerm}
           filteredImages={presetImages.filter(fn =>
-            fn.includes(imageSearchTerm)
+            fn.toLowerCase().includes(imageSearchTerm.toLowerCase())
           )}
           selectedImage={selectedImage}
           setSelectedImage={setSelectedImage}
