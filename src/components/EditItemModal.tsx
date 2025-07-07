@@ -24,67 +24,71 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
   const [caseCost, setCaseCost] = useState(item.caseCost)
   const [caseSize, setCaseSize] = useState(item.caseSize)
   const [category, setCategory] = useState(item.category)
+  const [unitType, setUnitType] = useState<'portion' | 'bag'>(item.unitType || 'portion')
 
   useEffect(() => {
     setQuantity(item.quantity)
     setExpiry(item.expiry)
     setName(item.name)
     setSearchTerm('')
-    setSelectedImage(
-      presetImages.find(fn => getImagePath(fn) === item.image) || ''
-    )
+    setSelectedImage(presetImages.find(fn => getImagePath(fn) === item.image) || '')
     setThreshold(item.threshold)
     setCaseCost(item.caseCost)
     setCaseSize(item.caseSize)
     setCategory(item.category)
+    setUnitType(item.unitType || 'portion')
   }, [item])
 
   const filteredImages = useMemo(
-    () => presetImages.filter(fn =>
-      fn.toLowerCase().includes(searchTerm.toLowerCase())
-    ),
+    () => presetImages.filter(fn => fn.toLowerCase().includes(searchTerm.toLowerCase())),
     [searchTerm]
   )
 
+  const previewCost =
+    unitType === 'portion'
+      ? (caseSize > 0 ? (caseCost / caseSize) * quantity : 0)
+      : caseCost * quantity
+
   const handleSave = () => {
-    if (isOwner) {
-      onSave({
-        ...item,
-        name,
-        quantity,
-        expiry,
-        image: selectedImage ? getImagePath(selectedImage) : item.image,
-        threshold,
-        caseCost,
-        caseSize,
-        category
-      })
-    } else {
-      onSave({ ...item, quantity, expiry })
-    }
+    const updated: Item = isOwner
+      ? {
+          ...item,
+          name,
+          quantity,
+          expiry,
+          image: selectedImage ? getImagePath(selectedImage) : item.image,
+          threshold,
+          caseCost,
+          caseSize,
+          category,
+          unitType
+        }
+      : { ...item, quantity, expiry }
+    onSave(updated)
   }
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 z-50"
+      className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-3 z-50"
       role="dialog"
       aria-modal="true"
       aria-labelledby="edit-item-title"
     >
-      <div className="bg-slate-900 text-white rounded-md shadow-lg p-4 w-full max-w-md max-h-[90vh] overflow-y-auto text-sm">
-        <h3 id="edit-item-title" className="text-xl font-semibold mb-4 text-emerald-400">
+      <div className="bg-slate-900 text-white rounded-md shadow-lg p-3 w-full max-w-sm max-h-[85vh] overflow-y-auto text-xs sm:text-sm">
+        <h3 id="edit-item-title" className="text-xl font-semibold mb-3 text-emerald-400">
           ✏️ Edit Item
         </h3>
 
         {isOwner ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <label className="block">
               Name
               <input
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                onFocus={e => e.target.select()}
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
 
@@ -94,7 +98,8 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
                 type="number"
                 value={quantity}
                 onChange={e => setQuantity(+e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                onFocus={e => e.target.select()}
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
 
@@ -102,9 +107,10 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
               Expiry
               <input
                 type="date"
+                inputMode="text"
                 value={expiry}
                 onChange={e => setExpiry(e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
 
@@ -114,7 +120,8 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
                 type="text"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                onFocus={e => e.target.select()}
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
 
@@ -123,11 +130,13 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
               <select
                 value={selectedImage}
                 onChange={e => setSelectedImage(e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               >
                 <option value="">— select —</option>
                 {filteredImages.map(fn => (
-                  <option key={fn} value={fn}>{fn}</option>
+                  <option key={fn} value={fn}>
+                    {fn}
+                  </option>
                 ))}
               </select>
             </label>
@@ -138,7 +147,8 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
                 type="number"
                 value={threshold}
                 onChange={e => setThreshold(+e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                onFocus={e => e.target.select()}
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
 
@@ -148,7 +158,8 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
                 type="number"
                 value={caseCost}
                 onChange={e => setCaseCost(+e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                onFocus={e => e.target.select()}
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
 
@@ -158,16 +169,33 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
                 type="number"
                 value={caseSize}
                 onChange={e => setCaseSize(+e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                onFocus={e => e.target.select()}
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
+
+            <label className="block">
+              Unit Type
+              <select
+                value={unitType}
+                onChange={e => setUnitType(e.target.value as 'portion' | 'bag')}
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+              >
+                <option value="portion">Per Portion</option>
+                <option value="bag">Whole Bag</option>
+              </select>
+            </label>
+
+            <div className="block text-emerald-300 sm:col-span-2 mt-1">
+              💰 Estimated Cost: <strong>£{previewCost.toFixed(2)}</strong>
+            </div>
 
             <label className="block sm:col-span-2">
               Category
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               >
                 <option value="">— select —</option>
                 {categories.map(c => (
@@ -186,7 +214,8 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
                 type="number"
                 value={quantity}
                 onChange={e => setQuantity(+e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                onFocus={e => e.target.select()}
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
 
@@ -194,24 +223,25 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
               Expiry
               <input
                 type="date"
+                inputMode="text"
                 value={expiry}
                 onChange={e => setExpiry(e.target.value)}
-                className="w-full mt-1 p-2 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
+                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
               />
             </label>
           </div>
         )}
 
-        <div className="mt-6 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+        <div className="mt-4 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
           <button
             onClick={onCancel}
-            className="w-full sm:w-auto px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded text-xs sm:text-sm focus:ring-2 focus:ring-red-400"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded"
+            className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded text-xs sm:text-sm focus:ring-2 focus:ring-emerald-400"
           >
             Save
           </button>

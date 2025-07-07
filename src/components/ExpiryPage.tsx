@@ -1,3 +1,4 @@
+// src/components/ExpiryPage.tsx
 import React, { FC, useState, useMemo } from 'react'
 import { Item } from '../App'
 import Card from './Card'
@@ -21,27 +22,48 @@ const tabLabels: Record<TabKey, string> = {
 const ExpiryPage: FC<Props> = ({ items, onDelete, onEdit, onTogglePin }) => {
   const { user } = useAuth()
   const isOwner = user?.role === 'owner'
-
   const [activeTab, setActiveTab] = useState<TabKey>('today')
 
-  const startOfToday = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
-  const startOfTomorrow = startOfToday + 86400000
-  const startOfDayAfter = startOfTomorrow + 86400000
+  const startOfToday = new Date().setHours(0, 0, 0, 0)
+  const startOfTomorrow = startOfToday + 24 * 60 * 60 * 1000
+  const startOfDayAfter = startOfTomorrow + 24 * 60 * 60 * 1000
 
+  // Group all items by expiry date tab
   const filtered = useMemo(() => {
     return items.filter(item => {
       const expTs = new Date(item.expiry).getTime()
-      if (activeTab === 'today') return expTs >= startOfToday && expTs < startOfTomorrow
-      if (activeTab === 'tomorrow') return expTs >= startOfTomorrow && expTs < startOfDayAfter
+      if (activeTab === 'today') {
+        return expTs >= startOfToday && expTs < startOfTomorrow
+      }
+      if (activeTab === 'tomorrow') {
+        return expTs >= startOfTomorrow && expTs < startOfDayAfter
+      }
       return expTs >= startOfDayAfter
     })
   }, [items, activeTab, startOfToday, startOfTomorrow, startOfDayAfter])
 
+  // Total cost of everything in expiry page
+  const totalStockCost = useMemo(() => {
+    return filtered.reduce((sum, i) => {
+      const cost =
+        i.unitType === 'portion'
+          ? i.caseSize > 0
+            ? (i.caseCost / i.caseSize) * i.quantity
+            : 0
+          : i.caseCost * i.quantity
+      return sum + cost
+    }, 0)
+  }, [filtered])
+
   return (
     <div className="p-4 max-w-screen overflow-x-hidden">
-      <h2 className="text-3xl font-bold text-emerald-400 mb-6 text-center sm:text-left">
+      <h2 className="text-3xl font-bold text-emerald-400 mb-2 text-center sm:text-left">
         📅 Expiry
       </h2>
+
+      <div className="text-right mb-4 text-lg font-semibold text-emerald-400">
+        Total Expiry Cost: £{totalStockCost.toFixed(2)}
+      </div>
 
       {/* Tabs */}
       <div className="overflow-x-auto mb-6">

@@ -1,15 +1,15 @@
 // src/components/StockPage.tsx
-import React, { useState, useEffect } from 'react';
-import { Item, Category } from '../App';
-import Card from './Card';
+import React, { useState, useEffect, useMemo } from 'react'
+import { Item, Category } from '../App'
+import Card from './Card'
 
 interface Props {
-  items: Item[];
-  categories: Category[];
-  onDelete(id: number): void;
-  onEdit(item: Item): void;
-  onTogglePin(id: number): void;
-  onImport(json: Item[]): void;
+  items: Item[]
+  categories: Category[]
+  onDelete(id: number): void
+  onEdit(item: Item): void
+  onTogglePin(id: number): void
+  onImport(json: Item[]): void
 }
 
 const StockPage: React.FC<Props> = ({
@@ -20,62 +20,87 @@ const StockPage: React.FC<Props> = ({
   onTogglePin,
   onImport
 }) => {
-  const [selectedCat, setSelectedCat] = useState<'all' | string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState<'name' | 'quantity' | 'expiry'>('name');
-  const [sortAsc, setSortAsc] = useState(true);
-  const [compactMode, setCompactMode] = useState(false);
-  const [expiringSoonCount, setExpiringSoonCount] = useState(0);
+  const [selectedCat, setSelectedCat] = useState<'all' | string>('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortField, setSortField] = useState<'name' | 'quantity' | 'expiry'>('name')
+  const [sortAsc, setSortAsc] = useState(true)
+  const [compactMode, setCompactMode] = useState(false)
+  const [expiringSoonCount, setExpiringSoonCount] = useState(0)
 
   // cutoff for “soon”
-  const soonCutoff = new Date();
-  soonCutoff.setDate(soonCutoff.getDate() + 3);
+  const soonCutoff = new Date()
+  soonCutoff.setDate(soonCutoff.getDate() + 3)
 
   useEffect(() => {
-    const count = items.filter(i => new Date(i.expiry) <= soonCutoff).length;
-    setExpiringSoonCount(count);
-  }, [items]);
+    const count = items.filter(i => new Date(i.expiry) <= soonCutoff).length
+    setExpiringSoonCount(count)
+  }, [items])
 
-  const catList = [{ label: 'All', value: 'all', emoji: '📦' }, ...categories];
+  const catList = [{ label: 'All', value: 'all', emoji: '📦' }, ...categories]
 
-  // filter & search
+  // filter out def/prep first, then category & search
   const filtered = items
+    .filter(i => i.category !== 'def/prep')
     .filter(i => selectedCat === 'all' || i.category === selectedCat)
-    .filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase().trim()));
+    .filter(i =>
+      i.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
+    )
 
   // sort & pin-first
-  const visibleItems = [...filtered].sort((a, b) => {
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    let cmp = 0;
-    if (sortField === 'name') cmp = a.name.localeCompare(b.name);
-    if (sortField === 'quantity') cmp = a.quantity - b.quantity;
-    if (sortField === 'expiry') cmp = a.expiry.localeCompare(b.expiry);
-    return sortAsc ? cmp : -cmp;
-  });
+  const visibleItems = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1
+      if (!a.pinned && b.pinned) return 1
+
+      let cmp = 0
+      if (sortField === 'name') cmp = a.name.localeCompare(b.name)
+      if (sortField === 'quantity') cmp = a.quantity - b.quantity
+      if (sortField === 'expiry') cmp = a.expiry.localeCompare(b.expiry)
+
+      return sortAsc ? cmp : -cmp
+    })
+  }, [filtered, sortField, sortAsc])
+
+  // total stock cost (excluding def/prep)
+  const totalStockCost = useMemo(() => {
+    return filtered.reduce((sum, i) => {
+      const cost =
+        i.unitType === 'portion'
+          ? i.caseSize > 0
+            ? (i.caseCost / i.caseSize) * i.quantity
+            : 0
+          : i.caseCost * i.quantity
+      return sum + cost
+    }, 0)
+  }, [filtered])
 
   // download JSON backup
   function handleSaveData() {
-    const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'stock-backup.json';
-    a.click(); URL.revokeObjectURL(url);
+    const blob = new Blob([JSON.stringify(items, null, 2)], {
+      type: 'application/json'
+    })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'stock-backup.json'
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   // import JSON
   function handleLoadData(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]; if (!file) return;
-    const reader = new FileReader();
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
     reader.onload = ev => {
       try {
-        const json = JSON.parse(ev.target?.result as string);
-        if (Array.isArray(json)) onImport(json);
+        const json = JSON.parse(ev.target?.result as string)
+        if (Array.isArray(json)) onImport(json)
       } catch {
-        alert('Invalid file');
+        alert('Invalid file')
       }
-    };
-    reader.readAsText(file);
+    }
+    reader.readAsText(file)
   }
 
   return (
@@ -83,7 +108,8 @@ const StockPage: React.FC<Props> = ({
       {/* warning banner */}
       {expiringSoonCount > 0 && (
         <div className="bg-amber-700 text-white rounded p-3 mb-4 flex justify-between items-center text-sm">
-          ⚠️ {expiringSoonCount} item{expiringSoonCount !== 1 && 's'} expiring within 3 days
+          ⚠️ {expiringSoonCount} item
+          {expiringSoonCount !== 1 && 's'} expiring within 3 days
         </div>
       )}
 
@@ -163,6 +189,11 @@ const StockPage: React.FC<Props> = ({
         </div>
       </div>
 
+      {/* total stock cost */}
+      <div className="text-right mb-4 text-lg font-semibold text-emerald-400">
+        Total Stock Cost: £{totalStockCost.toFixed(2)}
+      </div>
+
       {/* item grid */}
       {visibleItems.length === 0 ? (
         <p className="text-gray-400 text-center mt-8">No items match.</p>
@@ -181,7 +212,7 @@ const StockPage: React.FC<Props> = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default StockPage;
+export default StockPage
