@@ -1,0 +1,42 @@
+/* src/index.css */
+
+/* 1. Tailwind base layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 2. Your global/reset styles */
+/* (Re-add any custom rules you had here, e.g. body background, font, etc.) */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Example global styles—customize as needed */
+body {
+  @apply bg-slate-900 text-white font-sans;
+}
+a {
+  @apply text-emerald-400 hover:underline;
+}
+
+/* 3. Fade transition classes */
+.fade-enter {
+  opacity: 0;
+}
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+/* 4. Any other custom utilities or overrides */
+/* e.g. scroll-bar hiding, print styles, etc. */
