@@ -1,42 +1,46 @@
-/* src/index.css */
-
-/* 1. Tailwind base layers */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 2. Your global/reset styles */
-/* (Re-add any custom rules you had here, e.g. body background, font, etc.) */
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
-/* Example global styles—customize as needed */
-body {
-  @apply bg-slate-900 text-white font-sans;
-}
-a {
-  @apply text-emerald-400 hover:underline;
+@layer components {
+  .glass-card {
+    @apply bg-glass backdrop-blur-sm rounded-xl border border-haze/40 shadow-md;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 rounded bg-steel text-white placeholder-haze focus:outline-none focus:ring-2 focus:ring-plasma;
+  }
+
+  .btn-glow {
+    @apply px-4 py-2 rounded font-semibold text-black bg-mint hover:bg-plasma hover:text-white transition;
+  }
+
+  .section-title {
+    @apply text-xl sm:text-2xl font-bold tracking-wide text-mint mb-3;
+  }
+
+  .fade-in-up {
+    @apply animate-fadeInUp;
+  }
 }
 
-/* 3. Fade transition classes */
-.fade-enter {
-  opacity: 0;
-}
-.fade-enter-active {
-  opacity: 1;
-  transition: opacity 200ms ease-in;
-}
-.fade-exit {
-  opacity: 1;
-}
-.fade-exit-active {
-  opacity: 0;
-  transition: opacity 200ms ease-out;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* 4. Any other custom utilities or overrides */
-/* e.g. scroll-bar hiding, print styles, etc. */
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out both;
+}

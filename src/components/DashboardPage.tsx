@@ -1,4 +1,3 @@
-// src/components/DashboardPage.tsx
 import React, { FC, useMemo } from 'react';
 import { Item, Category } from '../App';
 
@@ -8,13 +7,11 @@ interface Props {
 }
 
 const DashboardPage: FC<Props> = ({ items, categories }) => {
-  // start-of-today timestamp
   const todayStart = useMemo(() => {
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
   }, []);
 
-  // overall summary stats
   const stats = useMemo(() => {
     const totalItems = items.length;
     const totalStockCost = items.reduce((sum, it) => {
@@ -30,7 +27,6 @@ const DashboardPage: FC<Props> = ({ items, categories }) => {
     return { totalItems, totalStockCost, outOfStock, expiringToday };
   }, [items, todayStart]);
 
-  // per‐category breakdown
   const breakdown = useMemo(() => {
     return categories.map(cat => {
       const catItems = items.filter(i => i.category === cat.value);
@@ -48,46 +44,40 @@ const DashboardPage: FC<Props> = ({ items, categories }) => {
   }, [items, categories]);
 
   return (
-    <div className="p-4">
-      <h2 className="text-3xl font-bold text-emerald-400 mb-6">
-        📊 Dashboard
-      </h2>
+    <div className="p-5 space-y-8">
+      <h2 className="text-2xl font-bold tracking-tight text-mint">📊 Dashboard Overview</h2>
 
-      {/* overall summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
-        <div className="bg-slate-800 p-4 rounded text-center">
-          <div className="text-gray-400">Total Items</div>
-          <div className="text-2xl font-semibold">{stats.totalItems}</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="glass-card text-center p-4">
+          <div className="text-haze text-sm mb-1">Total Items</div>
+          <div className="text-2xl font-bold text-white">{stats.totalItems}</div>
         </div>
-        <div className="bg-slate-800 p-4 rounded text-center">
-          <div className="text-gray-400">Total Stock Cost</div>
-          <div className="text-2xl font-semibold">
-            £{stats.totalStockCost.toFixed(2)}
-          </div>
+        <div className="glass-card text-center p-4">
+          <div className="text-haze text-sm mb-1">Total Stock Cost</div>
+          <div className="text-2xl font-bold text-mint">£{stats.totalStockCost.toFixed(2)}</div>
         </div>
-        <div className="bg-slate-800 p-4 rounded text-center">
-          <div className="text-gray-400">Out of Stock</div>
-          <div className="text-2xl font-semibold">{stats.outOfStock}</div>
+        <div className="glass-card text-center p-4">
+          <div className="text-haze text-sm mb-1">Out of Stock</div>
+          <div className="text-2xl font-bold text-plasma">{stats.outOfStock}</div>
         </div>
-        <div className="bg-slate-800 p-4 rounded text-center">
-          <div className="text-gray-400">Expiring Today</div>
-          <div className="text-2xl font-semibold">{stats.expiringToday}</div>
+        <div className="glass-card text-center p-4">
+          <div className="text-haze text-sm mb-1">Expiring Today</div>
+          <div className="text-2xl font-bold text-white">{stats.expiringToday}</div>
         </div>
       </div>
 
-      {/* category breakdown cards */}
-      <h3 className="text-2xl font-semibold mb-4">🔖 Category Breakdown</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <h3 className="text-xl font-semibold tracking-wide text-white">🔖 Category Breakdown</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
         {breakdown.map(cat => (
           <div
             key={cat.value}
-            className="bg-slate-800 p-4 rounded text-center"
+            className="glass-card p-4 text-sm text-white flex flex-col items-center justify-center text-center"
           >
-            <div className="text-xl">
+            <div className="text-lg font-medium">
               {cat.emoji} {cat.label}
             </div>
-            <div className="mt-2 text-gray-400">Items: {cat.itemCount}</div>
-            <div className="mt-1 text-emerald-300 font-semibold">
+            <div className="mt-1 text-haze">Items: {cat.itemCount}</div>
+            <div className="mt-1 font-semibold text-mint">
               £{cat.categoryCost.toFixed(2)}
             </div>
           </div>

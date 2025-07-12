@@ -1,53 +1,55 @@
-import React, { FC, useState, useEffect, useMemo } from 'react'
-import { Item, Category, presetImages, getImagePath } from '../App'
-import { useAuth } from '../contexts/AuthContext'
+import React, { FC, useState, useEffect, useMemo } from 'react';
+import { Item, Category, presetImages, getImagePath } from '../App';
+import { useAuth } from '../contexts/AuthContext';
 
 interface Props {
-  item: Item
-  categories: Category[]
-  onCancel(): void
-  onSave(updated: Item): void
+  item: Item;
+  categories: Category[];
+  onCancel(): void;
+  onSave(updated: Item): void;
 }
 
 const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
-  const { user } = useAuth()
-  const isOwner = user?.role === 'owner'
+  const { user } = useAuth();
+  const isOwner = user?.role === 'owner';
 
-  const [quantity, setQuantity] = useState(item.quantity)
-  const [expiry, setExpiry] = useState(item.expiry)
-  const [name, setName] = useState(item.name)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [quantity, setQuantity] = useState(item.quantity);
+  const [expiry, setExpiry] = useState(item.expiry);
+  const [name, setName] = useState(item.name);
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedImage, setSelectedImage] = useState(
     presetImages.find(fn => getImagePath(fn) === item.image) || ''
-  )
-  const [threshold, setThreshold] = useState(item.threshold)
-  const [caseCost, setCaseCost] = useState(item.caseCost)
-  const [caseSize, setCaseSize] = useState(item.caseSize)
-  const [category, setCategory] = useState(item.category)
-  const [unitType, setUnitType] = useState<'portion' | 'bag'>(item.unitType || 'portion')
+  );
+  const [threshold, setThreshold] = useState(item.threshold);
+  const [caseCost, setCaseCost] = useState(item.caseCost);
+  const [caseSize, setCaseSize] = useState(item.caseSize);
+  const [category, setCategory] = useState(item.category);
+  const [unitType, setUnitType] = useState<'portion' | 'bag'>(item.unitType || 'portion');
 
   useEffect(() => {
-    setQuantity(item.quantity)
-    setExpiry(item.expiry)
-    setName(item.name)
-    setSearchTerm('')
-    setSelectedImage(presetImages.find(fn => getImagePath(fn) === item.image) || '')
-    setThreshold(item.threshold)
-    setCaseCost(item.caseCost)
-    setCaseSize(item.caseSize)
-    setCategory(item.category)
-    setUnitType(item.unitType || 'portion')
-  }, [item])
+    setQuantity(item.quantity);
+    setExpiry(item.expiry);
+    setName(item.name);
+    setSearchTerm('');
+    setSelectedImage(presetImages.find(fn => getImagePath(fn) === item.image) || '');
+    setThreshold(item.threshold);
+    setCaseCost(item.caseCost);
+    setCaseSize(item.caseSize);
+    setCategory(item.category);
+    setUnitType(item.unitType || 'portion');
+  }, [item]);
 
   const filteredImages = useMemo(
     () => presetImages.filter(fn => fn.toLowerCase().includes(searchTerm.toLowerCase())),
     [searchTerm]
-  )
+  );
 
   const previewCost =
     unitType === 'portion'
-      ? (caseSize > 0 ? (caseCost / caseSize) * quantity : 0)
-      : caseCost * quantity
+      ? caseSize > 0
+        ? (caseCost / caseSize) * quantity
+        : 0
+      : caseCost * quantity;
 
   const handleSave = () => {
     const updated: Item = isOwner
@@ -61,142 +63,80 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
           caseCost,
           caseSize,
           category,
-          unitType
+          unitType,
         }
-      : { ...item, quantity, expiry }
-    onSave(updated)
-  }
+      : { ...item, quantity, expiry };
+
+    onSave(updated);
+  };
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-3 z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="edit-item-title"
-    >
-      <div className="bg-slate-900 text-white rounded-md shadow-lg p-3 w-full max-w-sm max-h-[85vh] overflow-y-auto text-xs sm:text-sm">
-        <h3 id="edit-item-title" className="text-xl font-semibold mb-3 text-emerald-400">
-          ✏️ Edit Item
-        </h3>
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-3">
+      <div className="glass-card fade-in-up w-full max-w-md max-h-[90vh] overflow-y-auto p-5 text-sm">
+        <h2 id="edit-item-title" className="section-title">✏️ Edit Item</h2>
 
         {isOwner ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label className="block">
               Name
-              <input
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                onFocus={e => e.target.select()}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              />
+              <input type="text" value={name} onChange={e => setName(e.target.value)} className="input-field" />
             </label>
 
             <label className="block">
               Quantity
-              <input
-                type="number"
-                value={quantity}
-                onChange={e => setQuantity(+e.target.value)}
-                onFocus={e => e.target.select()}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              />
+              <input type="number" value={quantity} onChange={e => setQuantity(+e.target.value)} className="input-field" />
             </label>
 
             <label className="block">
               Expiry
-              <input
-                type="date"
-                inputMode="text"
-                value={expiry}
-                onChange={e => setExpiry(e.target.value)}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              />
+              <input type="date" value={expiry} onChange={e => setExpiry(e.target.value)} className="input-field" />
             </label>
 
-            <label className="block">
+            <label className="block col-span-2">
               Filter Images
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                onFocus={e => e.target.select()}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              />
+              <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="input-field" />
             </label>
 
-            <label className="block">
+            <label className="block col-span-2">
               Choose Image
-              <select
-                value={selectedImage}
-                onChange={e => setSelectedImage(e.target.value)}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              >
+              <select value={selectedImage} onChange={e => setSelectedImage(e.target.value)} className="input-field">
                 <option value="">— select —</option>
-                {filteredImages.map(fn => (
-                  <option key={fn} value={fn}>
-                    {fn}
-                  </option>
+                {filteredImages.map(img => (
+                  <option key={img} value={img}>{img}</option>
                 ))}
               </select>
             </label>
 
             <label className="block">
               Threshold
-              <input
-                type="number"
-                value={threshold}
-                onChange={e => setThreshold(+e.target.value)}
-                onFocus={e => e.target.select()}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              />
+              <input type="number" value={threshold} onChange={e => setThreshold(+e.target.value)} className="input-field" />
             </label>
 
             <label className="block">
               Case Cost
-              <input
-                type="number"
-                value={caseCost}
-                onChange={e => setCaseCost(+e.target.value)}
-                onFocus={e => e.target.select()}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              />
+              <input type="number" value={caseCost} onChange={e => setCaseCost(+e.target.value)} className="input-field" />
             </label>
 
             <label className="block">
               Case Size
-              <input
-                type="number"
-                value={caseSize}
-                onChange={e => setCaseSize(+e.target.value)}
-                onFocus={e => e.target.select()}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              />
+              <input type="number" value={caseSize} onChange={e => setCaseSize(+e.target.value)} className="input-field" />
             </label>
 
             <label className="block">
               Unit Type
-              <select
-                value={unitType}
-                onChange={e => setUnitType(e.target.value as 'portion' | 'bag')}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              >
+              <select value={unitType} onChange={e => setUnitType(e.target.value as 'portion' | 'bag')} className="input-field">
                 <option value="portion">Per Portion</option>
                 <option value="bag">Whole Bag</option>
               </select>
             </label>
 
-            <div className="block text-emerald-300 sm:col-span-2 mt-1">
+            <div className="col-span-2 text-mint mt-1">
               💰 Estimated Cost: <strong>£{previewCost.toFixed(2)}</strong>
             </div>
 
-            <label className="block sm:col-span-2">
+            <label className="block col-span-2">
               Category
-              <select
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              >
+              <select value={category} onChange={e => setCategory(e.target.value)} className="input-field">
                 <option value="">— select —</option>
                 {categories.map(c => (
                   <option key={c.value} value={c.value}>
@@ -210,45 +150,27 @@ const EditItemModal: FC<Props> = ({ item, categories, onCancel, onSave }) => {
           <div className="space-y-4">
             <label className="block">
               Quantity
-              <input
-                type="number"
-                value={quantity}
-                onChange={e => setQuantity(+e.target.value)}
-                onFocus={e => e.target.select()}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              />
+              <input type="number" value={quantity} onChange={e => setQuantity(+e.target.value)} className="input-field" />
             </label>
 
             <label className="block">
               Expiry
-              <input
-                type="date"
-                inputMode="text"
-                value={expiry}
-                onChange={e => setExpiry(e.target.value)}
-                className="w-full mt-1 p-1.5 bg-gray-700 rounded focus:ring-2 focus:ring-emerald-400"
-              />
+              <input type="date" value={expiry} onChange={e => setExpiry(e.target.value)} className="input-field" />
             </label>
           </div>
         )}
 
-        <div className="mt-4 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
-          <button
-            onClick={onCancel}
-            className="w-full sm:w-auto px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded text-xs sm:text-sm focus:ring-2 focus:ring-red-400"
-          >
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-end">
+          <button onClick={onCancel} className="btn-glow bg-haze hover:bg-haze/70 text-white">
             Cancel
           </button>
-          <button
-            onClick={handleSave}
-            className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded text-xs sm:text-sm focus:ring-2 focus:ring-emerald-400"
-          >
+          <button onClick={handleSave} className="btn-glow">
             Save
           </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditItemModal
+export default EditItemModal;

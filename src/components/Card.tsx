@@ -1,85 +1,63 @@
-import React, { FC } from 'react'
-import { Item } from '../App'
-import { useAuth } from '../contexts/AuthContext'
+import React from 'react';
+import { Item, Category, getImagePath } from '../App';
 
 interface Props {
-  item: Item
-  onDelete(id: number): void
-  onEdit(): void
-  onCompact: boolean
-  togglePin(): void
+  item: Item;
+  category: Category | undefined;
+  onEdit(): void;
+  onDelete(): void;
 }
 
-const Card: FC<Props> = ({
-  item,
-  onDelete,
-  onEdit,
-  onCompact,
-  togglePin
-}) => {
-  const { user } = useAuth()
-  const isOwner = user?.role === 'owner'
-  const unitCost = item.caseSize > 0 ? item.caseCost / item.caseSize : 0
+const Card: React.FC<Props> = ({ item, category, onEdit, onDelete }) => {
+  const imageSrc = item.image || '';
+  const costPerUnit =
+    item.unitType === 'portion'
+      ? item.caseSize > 0
+        ? item.caseCost / item.caseSize
+        : 0
+      : item.caseCost;
 
   return (
-    <div className="bg-slate-800 rounded-lg overflow-hidden shadow-md transition-transform duration-200 hover:shadow-lg hover:scale-[1.02] flex flex-col p-3 text-sm w-full">
-      <div className="flex justify-between items-center mb-2">
-        <button
-          onClick={togglePin}
-          className={item.pinned ? 'text-amber-300' : 'text-gray-500'}
-          title={item.pinned ? 'Unpin item' : 'Pin item'}
-        >
-          📌
-        </button>
-        {isOwner && (
-          <button
-            onClick={() => onDelete(item.id)}
-            className="text-red-400 hover:text-red-600"
-            title="Delete item"
-          >
-            🗑️
-          </button>
-        )}
+    <div className="glass-card relative hover:ring-2 hover:ring-plasma transition-all overflow-hidden p-4 rounded-xl shadow-md space-y-3">
+      <div className="flex justify-between items-center">
+        <span className="text-xs uppercase tracking-wide text-mint bg-haze/50 px-2 py-0.5 rounded-full">
+          {category?.emoji} {category?.label}
+        </span>
+        <span className="text-xs text-white/60">
+          {item.expiry ? `⏳ ${item.expiry}` : 'No expiry'}
+        </span>
       </div>
 
       <img
-        src={item.image}
+        src={imageSrc}
         alt={item.name}
-        className="w-full h-20 sm:h-24 object-contain mb-2 rounded bg-slate-700"
+        className="w-full h-32 object-cover rounded-md grayscale hover:grayscale-0 transition"
       />
 
-      <h4 className="font-semibold truncate">{item.name}</h4>
-      <p className="text-gray-400">
-        Qty: <span className="font-semibold">{item.quantity}</span>
-      </p>
-      <p className="text-gray-400">
-        Exp: <span className="font-semibold">{item.expiry}</span>
-      </p>
-      <p className="text-gray-400">
-        Cost: <span className="font-semibold">£{unitCost.toFixed(2)}</span>
-      </p>
+      <h3 className="font-bold tracking-tight text-white">{item.name}</h3>
 
-      <div className="mt-auto flex justify-between items-center pt-2">
+      <div className="flex justify-between text-sm text-haze">
+        <span>Qty: <strong className="text-white">{item.quantity}</strong></span>
+        <span>Thres: <strong className="text-white">{item.threshold}</strong></span>
+        <span>£{costPerUnit.toFixed(2)}</span>
+      </div>
+
+      <div className="flex justify-end gap-2 pt-2">
         <button
           onClick={onEdit}
-          className="bg-blue-600 hover:bg-blue-500 rounded px-3 py-1 text-white text-xs"
+          className="btn-glow bg-haze/60 text-white hover:bg-plasma hover:text-black"
         >
-          ✏️ Edit
+          Edit
         </button>
-        {!isOwner && (
-          <span
-            className={`px-2 py-0.5 rounded text-[0.65rem] text-white ${
-              ['Low', 'OOS'].includes(item.level)
-                ? 'bg-rose-600'
-                : 'bg-green-600'
-            }`}
-          >
-            {item.level === 'OOS' ? 'Out' : 'OK'}
-          </span>
-        )}
+        <button
+          onClick={onDelete}
+          className="btn-glow bg-red-600 hover:bg-red-400 text-white"
+        >
+          Delete
+        </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Card
+export default Card;

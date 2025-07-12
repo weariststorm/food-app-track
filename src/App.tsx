@@ -266,7 +266,7 @@ function InnerApp(): JSX.Element {
       {/* page transitions */}
       <div className="relative flex-grow overflow-hidden">
         <TransitionGroup component={null}>
-          <CSSTransition key={location.pathname} classNames="fade" timeout={200}>
+          <CSSTransition key={location.pathname} classNames="fade" timeout={0}>
             <div className="absolute inset-0 p-4 overflow-auto">
               <Routes location={location}>
                 <Route
